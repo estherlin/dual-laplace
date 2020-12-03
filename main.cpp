@@ -2,7 +2,8 @@
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
-#include "./include/dual_laplacian.h"
+#include <igl/massmatrix.h>
+#include "dual_laplacian.h"
 
 // Input polygon
 Eigen::MatrixXd V;
@@ -13,6 +14,17 @@ Eigen::MatrixXd B;
 Eigen::MatrixXd TV;
 Eigen::MatrixXi TT;
 Eigen::MatrixXi TF;
+
+// Does the solving for the dual laplacian
+bool solve(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
+{
+  // Construct the laplacian matrix
+  Eigen::SparseMatrix<double> L, M;
+  igl::massmatrix(TV, TF, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
+  dual_laplacian(TV, TT, L, M);
+  return true;
+}
+
 
 // This function is called every time a keyboard button is pressed
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
@@ -70,6 +82,10 @@ int main(int argc, char *argv[])
 
   // Compute barycenters
   igl::barycenter(TV,TT,B);
+
+  // A noise model to be smoothed -- just the y axis
+  Eigen::MatrixXd G = TV.col(1);
+  G += 0.1*(G.maxCoeff()-G.minCoeff())*Eigen::MatrixXd::Random(G.rows(),G.cols());
 
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;
