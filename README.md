@@ -1,13 +1,10 @@
-# libigl example project
+# dual laplace
 
-A blank project example showing how to use libigl and cmake. Feel free and
-encouraged to copy or fork this project as a way of starting a new personal
-project using libigl.
+An implementation of the tetrahedral laplacian operators described in the SGP 2020 paper [Properties of Laplace Operators for Tetrahedral Meshes](https://igl.ethz.ch/projects/LB3D/LB3D.pdf). 
 
-## See the tutorial first
+Template copied from [libigl-example-project](https://github.com/libigl/libigl-example-project). 
 
-Then build, run and understand the [libigl
-tutorial](http://libigl.github.io/libigl/tutorial/).
+Author: [esther](http://www.cs.toronto.edu/~lin/)
 
 ## Dependencies
 
