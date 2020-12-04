@@ -20,7 +20,7 @@ bool solve(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   // Construct the laplacian matrix
   Eigen::SparseMatrix<double> L, M;
-  igl::massmatrix(TV, TF, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
+  igl::massmatrix(TV, TT, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
   dual_laplacian(TV, TT, L, M);
   return true;
 }

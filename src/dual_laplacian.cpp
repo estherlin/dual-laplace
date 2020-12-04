@@ -4,7 +4,7 @@
 #include <cmath>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
-typedef Eigen::Triplet<double> T;
+typedef Eigen::Triplet<double> t;
 
 void dual_laplacian(
   const Eigen::MatrixXd& V, 
@@ -12,7 +12,15 @@ void dual_laplacian(
   Eigen::SparseMatrix<double>& L, 
   Eigen::SparseMatrix<double>& M){
 
-  // First call tetrahedralize to mesh the interior of a surface mesh (V,F)
+  // The matrix is num verticies x num vertices
+  L.resize(T.maxCoeff()+1, T.maxCoeff()+1);
+  L.setZero(); // Always set to zero!
+
+  std::vector<t> tripletList;
+  tripletList.reserve(16*T.rows()); // 4x4 matrix for each tetrahedron
+
+
+  double v_ijkl, v_ijlk;
 }
 
 

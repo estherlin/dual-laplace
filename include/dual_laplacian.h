@@ -1,3 +1,5 @@
+#ifndef DUALLAPLACE_H
+#define DUALLAPLACE_H
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
@@ -12,3 +14,4 @@ void dual_laplacian(
   const Eigen::MatrixXi& T, 
   Eigen::SparseMatrix<double>& L, 
   Eigen::SparseMatrix<double>& M);
+#endif
