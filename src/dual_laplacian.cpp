@@ -15,13 +15,19 @@ void dual_laplacian(
   Eigen::SparseMatrix<double>& L, 
   Eigen::SparseMatrix<double>& M){
 
-  // The matrix is num verticies x num vertices
+  // The matrix is num verticies x num vertices, always set to zero!
   L.resize(V.rows(), V.rows());
-  L.setZero(); // Always set to zero!
+  L.setZero(); 
+  M.resize(V.rows(), V.rows());
+  M.setZero();
 
   // For each vertex of tet, you have 3 possible orientations, 2 items for each
-  std::vector<t> tripletList;
-  tripletList.reserve(4*3*2*T.rows()); 
+  std::vector<t> tripletListL;
+  tripletListL.reserve(4*3*4*T.rows()); 
+
+  // Also make the mass matrix in the same loop
+  std::vector<t> tripletListM;
+  tripletListM.reserve(4*3*2*T.rows()); 
 
   // List of triangle faces per tetrahedron
   Eigen::Matrix3i faces(12,3);
@@ -68,21 +74,29 @@ void dual_laplacian(
       Eigen::Vector3d edge_cc;
       edge_cc = (0.5) * (V.row(T(i, faces(j, 0))) + V.row(T(i, faces(j, 1))));
 
-      // Get volume, edge norm and weight of this tetrahedron
-      double vol = tet_volume(V.row(T(i, faces(j, 0))), edge_cc, tri_cc, tet_cc);
+      // Get volume
+      double vol;
+      tet_volume(V.row(T(i, faces(j, 0))), edge_cc, tri_cc, tet_cc, vol);
+
+      // Place volume into our M operator
+      tripletListM.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 1)), vol)); // i != j
+      tripletListM.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 0)), vol)); // i != j
+
+      // Get edge norm and weight of this tetrahedron
       double edge_sq = (V.row(T(i, faces(j, 0))) - V.row(T(i, faces(j, 1)))).squaredNorm();
       double w = (6.0) * vol/edge_sq;
 
-      // Place them into our operator
-      tripletList.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 1)), w)); // i != j
-      tripletList.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 0)), w)); // i != j
-      tripletList.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 0)), (-1.0)*w)); // i == i
-      tripletList.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 1)), (-1.0)*w)); // j == j
+      // Place them into our L operator
+      tripletListL.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 1)), w)); // i != j
+      tripletListL.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 0)), w)); // i != j
+      tripletListL.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 0)), (-1.0)*w)); // i == i
+      tripletListL.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 1)), (-1.0)*w)); // j == j
 
     }
   }
 
-  L.setFromTriplets(tripletList.begin(), tripletList.end());
+  L.setFromTriplets(tripletListL.begin(), tripletListL.end());
+  M.setFromTriplets(tripletListM.begin(), tripletListM.end());
 }
 
 
