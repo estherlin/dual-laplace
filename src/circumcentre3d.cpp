@@ -1,4 +1,4 @@
-#include "cotmatrix.h"
+#include "circumcentre3d.h"
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -6,7 +6,7 @@
 
 
 void circumcentre3d(
-  const Eigen::MatrixXd& A, 
+  const Eigen::Matrix3d& A, 
   Eigen::Vector3d& c){
 
   // Find number of data points
