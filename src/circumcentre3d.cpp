@@ -6,16 +6,16 @@
 
 
 void circumcentre3d(
-  const Eigen::Matrix3d& A, 
+  const Eigen::MatrixXd& A, 
   Eigen::Vector3d& c){
 
   // Find number of data points
   int n = A.rows();
-  c.setZero();
 
   // If number of data points is 1, the centre is the point
   if (n == 1){
     c = A.row(0);
+
   } else if (n == 2)
   {
     c = 0.5 * (A.row(0) + A.row(1));

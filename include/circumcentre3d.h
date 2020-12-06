@@ -7,6 +7,6 @@
 // Outputs:
 //   c  #c by d vertex of circumcentre position in 3D
 void circumcentre3d(
-  const Eigen::Matrix3d& A, 
+  const Eigen::MatrixXd& A, 
   Eigen::Vector3d& c);
 #endif

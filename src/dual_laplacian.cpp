@@ -1,7 +1,7 @@
 #include "dual_laplacian.h"
 #include "circumcentre3d.h"
 #include "tet_volume.h"
-
+#include<Eigen/SparseCholesky>
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -15,12 +15,6 @@ void dual_laplacian(
   Eigen::SparseMatrix<double>& L, 
   Eigen::SparseMatrix<double>& M){
 
-  // The matrix is num verticies x num vertices, always set to zero!
-  L.resize(V.rows(), V.rows());
-  L.setZero(); 
-  M.resize(V.rows(), V.rows());
-  M.setZero();
-
   // For each vertex of tet, you have 3 possible orientations, 2 items for each
   std::vector<t> tripletListL;
   tripletListL.reserve(4*3*4*T.rows()); 
@@ -30,7 +24,7 @@ void dual_laplacian(
   tripletListM.reserve(4*3*2*T.rows()); 
 
   // List of triangle faces per tetrahedron
-  Eigen::Matrix3i faces(12,3);
+  Eigen::MatrixXi faces(12,3);
   faces << 0,1,2,
            0,2,3,
            0,3,1,
@@ -61,7 +55,7 @@ void dual_laplacian(
     for (int j = 0; j < 12; j++){
 
       // Get our triangle face (normal out)
-      Eigen::Matrix3d tri(3,3);
+      Eigen::MatrixXd tri(3,3);
       for (int ind = 0; ind < 3; ind++){
         tri.row(ind) = V.row(T(i, faces(j, ind)));
       }
@@ -94,6 +88,11 @@ void dual_laplacian(
 
     }
   }
+
+
+  // The matrix is num verticies x num vertices, always set to zero!
+  L.resize(V.rows(), V.rows());
+  M.resize(V.rows(), V.rows());
 
   L.setFromTriplets(tripletListL.begin(), tripletListL.end());
   M.setFromTriplets(tripletListM.begin(), tripletListM.end());
