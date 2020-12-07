@@ -12,6 +12,7 @@
 #include <igl/slice_into.h>
 #include <igl/min_quad_with_fixed.h>
 #include <igl/colon.h>
+#include <igl/faces_first.h>
 #include <Eigen/Sparse>
 #include<Eigen/SparseCholesky>
 #include "dual_laplacian.h"
@@ -23,13 +24,14 @@ Eigen::MatrixXd B;
 Eigen::MatrixXd N;
 
 // Tetrahedralized interior
-Eigen::MatrixXd TV;
-Eigen::MatrixXi TT;
-Eigen::MatrixXi TF;
+Eigen::MatrixXd TV, tempTV;
+Eigen::MatrixXi TT, tempTT;
+Eigen::MatrixXi TF, tempTF;
 
 // Solved
 Eigen::VectorXd Z, Z_in;
 Eigen::MatrixXi bound_faces, bound_inds, bound_across;
+Eigen::MatrixXd bound_ver;
 
 
 
@@ -38,6 +40,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 {
   using namespace std;
   using namespace Eigen;
+  std::cout<<key<<std::endl;
 
   if (key >= '1' && key <= '9')
   {
@@ -78,10 +81,10 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.data().set_mesh(V_temp,F_temp);
     viewer.data().set_data(Z_temp);
     viewer.data().set_face_based(true);
-  } else if (key == 'b') {
-    std::cout<<"boundary faces"<<std::endl;
+  } else if (key == 'b' || key == 'B') {
     viewer.data().clear();
-    viewer.data().set_mesh(b, bound_faces);
+    viewer.data().set_mesh(V, F);
+    viewer.data().set_data(Eigen::VectorXd::Zero(V.rows(),1));
     viewer.data().set_face_based(true);
   }
 
@@ -103,8 +106,14 @@ int main(int argc, char *argv[])
     igl::readOFF(argc>1?argv[1]:"../data/3holes.off",V,F);
   }
 
-  // Tetrahedralize the interior  
-  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
+  std::cout<<V.rows()<<V.cols()<<std::endl;
+  std::cout<<F.rows()<<F.cols()<<std::endl;
+
+  // Tetrahedralize the interior  "pq1.1a0.05aA"
+  Eigen::VectorXi IM;
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414a0.01", TV,TT,TF);
+  igl::faces_first(TV,F,IM);
+  TT = TT.unaryExpr(bind1st(mem_fun( static_cast<VectorXi::Scalar& (VectorXi::*)(VectorXi::Index)>(&VectorXi::operator())),&IM)).eval();
 
   // Compute barycenters
   igl::barycenter(TV,TT,B);
@@ -136,7 +145,7 @@ int main(int argc, char *argv[])
   igl::slice(Z,b,bc);
 
   // Solve PDE
-  SimplicialLLT<SparseMatrix<double > > solver(-L_in_in);
+  SimplicialLLT<SparseMatrix<double>> solver(L_in_in);
   Z_in = solver.solve(L_in_b*bc);
   // slice into solution
   igl::slice_into(Z_in,in,Z);
@@ -163,12 +172,12 @@ int main(int argc, char *argv[])
   // Print command keys
   std::cout<<R"(
     1-9  cross-sectional views
-    b    boundary conditions surface
-    r  reset mesh geometry and data
+    b    see full shape
+    f    full shape
   )"<<std::endl;
 
   viewer.callback_key_down = &key_down;
   key_down(viewer,'5',0);
-  viewer.data().show_lines = true;
+  viewer.data().show_lines = false;
   viewer.launch();
 }
