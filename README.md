@@ -2,21 +2,19 @@
 
 An implementation of the tetrahedral laplacian operators described in the SGP 2020 paper [Properties of Laplace Operators for Tetrahedral Meshes](https://igl.ethz.ch/projects/LB3D/LB3D.pdf). 
 
-Template copied from [libigl-example-project](https://github.com/libigl/libigl-example-project). 
+Template from [libigl-example-project](https://github.com/libigl/libigl-example-project). 
 
-Author: [esther](http://www.cs.toronto.edu/~lin/)
+Author: [esther]()
 
-## Dependencies
+## Setup
 
-The only dependencies are stl, eigen, [libigl](http://libigl.github.io/libigl/) and
-the dependencies of the `igl::opengl::glfw::Viewer`.
+### Dependencies
 
-The cmake build system will attempt to find libigl according to environment variables (e.g., `LIBIGL`) and searching in common desitinations (e.g., `/usr/local/libigl/`). If you haven't installed libigl before, we recommend you to clone a copy of libigl right here:
+-   [libigl](http://libigl.github.io/libigl/)
+-   Eigen
+-   tetgen
 
-    cd libigl-example-project/
-    git clone https://github.com/libigl/libigl.git
-
-## Compile
+### Compile
 
 Compile this project using the standard cmake routine:
 
@@ -25,12 +23,30 @@ Compile this project using the standard cmake routine:
     cmake ..
     make
 
-This should find and build the dependencies and create a `example_bin` binary.
+This should create a `tetra` binary.
 
-## Run
+### Run
 
 From within the `build` directory just issue:
 
-    ./example
-
+    ./tetra
 A glfw app should launch displaying a 3D cube.
+
+## Examples
+
+### Laplace equation with Dirchlet boundary conditions
+
+![Cooling one side of a cube](./assets/cube.gif)
+
+In this example, we solve the Laplace equation
+$$
+\Delta u = 0
+$$
+where $\Delta$ is the Laplacian operator and $u$ are the values at the vertices of our 3D mesh, subject to Dirichlet boundary conditions
+$$
+u\vert_{\partial S} = 0
+
+$$
+
+### Smoothing
+
