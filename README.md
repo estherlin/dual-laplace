@@ -2,6 +2,10 @@
 
 An implementation of the tetrahedral laplacian operators described in the SGP 2020 paper [Properties of Laplace Operators for Tetrahedral Meshes](https://igl.ethz.ch/projects/LB3D/LB3D.pdf). 
 
+In addition to implementing the dyal laplacian, I also provide code written in libigl-style for:
+1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
+2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
+
 Template from [libigl-example-project](https://github.com/libigl/libigl-example-project). 
 
 Author: [esther]()

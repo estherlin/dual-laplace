@@ -1,10 +1,7 @@
 #include "smooth.h"
-#include "cotmatrix.h"
-#include "massmatrix.h"
 #include<Eigen/SparseCholesky>
 #include <igl/edge_lengths.h>
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
+#include "dual_laplacian.h"
 #include <iostream>
 
 void smooth(
@@ -14,21 +11,9 @@ void smooth(
     double lambda,
     Eigen::MatrixXd & U)
 {
-  // Replace with your code
-  // U = G;
-
-  // Find edge lengths
-  Eigen::MatrixXd l;
-  igl::edge_lengths(V, F, l);
-
-  // Find Mass matrix
-  Eigen::DiagonalMatrix<double, Eigen::Dynamic> M;
-  massmatrix(l, F, M);
-
-  // Find cotangent matrix
-  Eigen::SparseMatrix<double> L;
-  cotmatrix(l, F, L);
-  //igl::cotmatrix(V, F, L);
+  // Find dual laplacian matrix
+  Eigen::SparseMatrix<double> L, M;
+  dual_laplacian(V, F, L, M);
 
   // Find Ax = b;
   Eigen::SparseMatrix<double> A = (-1.0)*lambda * L;
@@ -43,5 +28,4 @@ void smooth(
   Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> solver;
   solver.compute(A);
   U = solver.solve(b);
-  std::cout << "completed 1 itr" << std::endl;
 }

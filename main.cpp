@@ -3,8 +3,9 @@
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
 #include <igl/massmatrix.h>
+#include <igl/cotmatrix.h>
 #include <igl/parula.h>
-#include <igl/readSTL.h>
+#include <igl/readOBJ.h>
 #include <igl/parula.h>
 #include <igl/boundary_facets.h>
 #include <igl/unique.h>
@@ -17,6 +18,7 @@
 #include <Eigen/Sparse>
 #include<Eigen/SparseCholesky>
 #include "dual_laplacian.h"
+#include "smooth.h"
 
 // Input polygon
 Eigen::MatrixXd V;
@@ -30,12 +32,14 @@ Eigen::MatrixXi TT, tempTT;
 Eigen::MatrixXi TF, tempTF;
 Eigen::MatrixXd C;
 
-
-// Solved
+// Eigen Problem
 Eigen::VectorXd Z, Z_in;
 Eigen::MatrixXi bound_faces, bound_inds, bound_across;
 Eigen::MatrixXd bound_ver;
 
+// Smoothing Problem
+double lambda = 0.1;
+Eigen::MatrixXd G, U;;
 
 
 // This function is called every time a keyboard button is pressed
@@ -91,35 +95,19 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.data().set_mesh(V, F);
     viewer.data().set_data(Eigen::VectorXd::Ones(V.rows(),1));
     viewer.data().set_face_based(true);
+  } else if (key == 'n' || key == 'N'){
+    smooth(TV, TT, U, lambda, U);
+    viewer.data().set_mesh(TV,TF);
+    viewer.data().compute_normals();
+    Eigen::MatrixXd CC;
+    igl::parula(U,G.minCoeff(),G.maxCoeff(),CC);
+    viewer.data().set_colors(CC);
   }
 
   return false;
 }
 
-int main(int argc, char *argv[])
-{
-  using namespace Eigen;
-  using namespace std;
-
-  if ((argc > 1) && (strcmp(".sl", argv[1]) == 0)) {
-    std::cout << "Reading .stl file..." << std::endl;
-    FILE * fp = fopen(argv[1], "r");
-    igl::readSTL(fp,V,F,N);
-    fclose(fp);
-  } else {
-    std::cout << "Reading .off file..." << std::endl;
-    igl::readOFF(argc>1?argv[1]:"../data/3holes.off",V,F);
-  }
-
-  std::cout<<V.rows()<<V.cols()<<std::endl;
-  std::cout<<F.rows()<<F.cols()<<std::endl;
-
-  // Tetrahedralize the interior  "pq1.1a0.05aA"
-  Eigen::VectorXi IM;
-  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414a0.01", TV,TT,TF);
-  //igl::faces_first(TV,F,IM);
-  //TT = TT.unaryExpr(bind1st(mem_fun( static_cast<VectorXi::Scalar& (VectorXi::*)(VectorXi::Index)>(&VectorXi::operator())),&IM)).eval();
-
+void solve_eigen(){
   // Compute barycenters
   igl::barycenter(TV,TT,B);
 
@@ -131,26 +119,29 @@ int main(int argc, char *argv[])
   igl::unique(bound_faces,b,IA,IC);
 
   // List of all vertex indices
-  VectorXi all,in;
+  Eigen::VectorXi all,in;
   igl::colon<int>(0,TV.rows()-1,all);
 
   // List of interior indices
   igl::setdiff(all,b,in,IA);
 
   // Construct and slice up Laplacian
-  SparseMatrix<double> L,L_in_in,L_in_b, M;
+  Eigen::SparseMatrix<double> L,L_in_in,L_in_b, M;
+  // Swap to see primal implmenetation
+  //igl::cotmatrix(TV, TT, L);
+  //igl::massmatrix(TV, TT, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
   dual_laplacian(TV, TT, L, M);
 
   igl::slice(L,in,in,L_in_in);
   igl::slice(L,in,b,L_in_b);
 
   // Dirichlet boundary conditions from z-coordinate
-  VectorXd bc;
+  Eigen::VectorXd bc;
   Z = TV.col(2);
   igl::slice(Z,b,bc);
 
   // Solve PDE
-  SimplicialLLT<SparseMatrix<double>> solver(L_in_in);
+  Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> solver(L_in_in);
   Z_in = solver.solve(L_in_b*bc);
   // slice into solution
   igl::slice_into(Z_in,in,Z);
@@ -158,22 +149,45 @@ int main(int argc, char *argv[])
   // Alternative, short hand
   igl::min_quad_with_fixed_data<double> mqwf;
   // Linear term is 0
-  VectorXd B = VectorXd::Zero(TV.rows(),1);
+  Eigen::VectorXd B = Eigen::VectorXd::Zero(TV.rows(),1);
   // Empty constraints
-  VectorXd Beq;
-  SparseMatrix<double> Aeq;
+  Eigen::VectorXd Beq;
+  Eigen::SparseMatrix<double> Aeq;
 
 
   // Our L may be indefinite
   igl::min_quad_with_fixed_precompute(L.eval(),b,Aeq,true,mqwf);
   igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
+}
+
+int main(int argc, char *argv[])
+{
+  using namespace Eigen;
+  using namespace std;
+
+  igl::readOFF(argc>1?argv[1]:"../data/cube.off",V,F);
+
+  std::cout<<V.rows()<<V.cols()<<std::endl;
+  std::cout<<F.rows()<<F.cols()<<std::endl;
+
+  // Tetrahedralize the interior  "pq1.1a0.05aA"
+  Eigen::VectorXi IM;
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414a0.01", TV,TT,TF);
+  //igl::faces_first(TV,F,IM);
+  //TT = TT.unaryExpr(bind1st(mem_fun( static_cast<VectorXi::Scalar& (VectorXi::*)(VectorXi::Index)>(&VectorXi::operator())),&IM)).eval();
+
+  // Solve the eigenvalue problem
+  solve_eigen();
+
+  // Smoothing
+  G = TV.col(1);
+  G += 0.1*(G.maxCoeff()-G.minCoeff())*
+        Eigen::MatrixXd::Random(G.rows(),G.cols());
+  U = G;
 
   //Set color scale
   igl::parula(Z,true,C);
 
-  //std::cout<<Z.rows()<<Z.cols()<<std::endl;
-  //std::cout<<Z_in.rows()<<Z_in.cols()<<std::endl;
-  //std::cout<<TV.rows()<<TV.cols()<<std::endl;
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;
 
@@ -182,6 +196,7 @@ int main(int argc, char *argv[])
     1-9  cross-sectional views
     b    see full shape
     f    full shape
+    n    smoothing
   )"<<std::endl;
 
   viewer.callback_key_down = &key_down;
