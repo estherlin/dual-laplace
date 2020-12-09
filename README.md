@@ -29,6 +29,7 @@ Links to mathematical equations and derivations are cited in the header and/or `
 
 -   Template taken from [libigl-example-project](https://github.com/libigl/libigl-example-project): this was a great place to start!
 -   Demo adapted from [Example 605 Tetgen](https://github.com/libigl/libigl/blob/master/tutorial/605_Tetgen/main.cpp) and [Example 303 Laplace Equation](https://github.com/libigl/libigl/blob/master/tutorial/303_LaplaceEquation/main.cpp)
+-   The header file for the dual laplacian was taken from [assignment Github](https://github.com/alecjacobson/geometry-processing-libigl-implementations/blob/main/Laplace%20Operators%20for%20Tetrahedral%20Meshes/dual_laplacian.h)
 
 ### Dependencies
 
