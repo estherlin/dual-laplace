@@ -5,19 +5,20 @@ An implementation of the tetrahedral laplacian operators described in the SGP 20
 In addition to implementing the dual laplacian in ```src/dual_laplacian.h```, I also provide code written in libigl-style for:
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
-  Maybe these can also be nice additions to libigl!
+
+Maybe these can also be nice additions to libigl!
 
 Author: esther lin
 
 Please refer to:
 
--   ```entry.md``` for the libigl tutorial-style explanation of this project
+-   ```entry.md``` for the libigl tutorial-style explanation of this project (also submitted on Markus)
 -   [YouTube](https://youtu.be/0IMYSC3cPkQ) for a 1 min demo of this project
 -   [GitHub (this project)](https://github.com/estherlin/dual-laplace) for everything else
 
 ## Structure of Repo
 
--   ```include/```: contains header files with documentation. 
+-   ```include/```: contains header files with documentation
 -   ```src/```: contains ```.cpp``` files
 -   ```data/```: contains ```.off``` files used in demo and development
 -   ```assets/```: contains screenshots and ```.gif``` files demo-ing the program
@@ -26,14 +27,16 @@ Links to mathematical equations and derivations are cited in the header and/or `
 
 ## Setup
 
--   Template from [libigl-example-project](https://github.com/libigl/libigl-example-project)
+**Credits to**:
+
+-   Template taken from [libigl-example-project](https://github.com/libigl/libigl-example-project): this was a great place to start!
 -   Demo adapted from [Example 605 Tetgen](https://github.com/libigl/libigl/blob/master/tutorial/605_Tetgen/main.cpp) and [Example 303 Laplace Equation](https://github.com/libigl/libigl/blob/master/tutorial/303_LaplaceEquation/main.cpp)
 
 ### Dependencies
 
 -   [libigl](http://libigl.github.io/libigl/): make sure to have the full install! Have a version of libigl that is built according to the [libigl tutorial](https://libigl.github.io/tutorial/#downloading-libigl)
--   Eigen
--   Tetgen: comes with the full install of libigl. This can be a *massive* pain to install on its own, it's much easier to just go through the entire libigl installation.
+-   [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+-   [Tetgen](http://wias-berlin.de/software/tetgen/): comes with the full install of libigl. This can be a ***massive*** pain to install on its own, it's much easier to just go through the entire libigl installation.
 
 ### Compile
 
@@ -48,7 +51,7 @@ This should create a `tetra` binary.
 
 ### Run
 
-From within the `build` directory, issue:
+From within the `build` directory, run with:
 
     ./tetra
 A glfw app should launch displaying a 3D cube. 
@@ -62,7 +65,7 @@ To see other meshes, issue:
 ./tetra ../data/<file>.off
 ```
 
-Beware! Other meshes may take a **long** time to load!
+Beware! Other meshes may take a ***long*** time to load!
 
 ## Background
 
@@ -164,7 +167,7 @@ These physical inconsistencies may be attributed to a coarse meshing, but I thin
 
 ### Testing
 
-The authors of the paper already have [code](https://igl.ethz.ch/projects/LB3D/dualLaplace.cpp) on their [project website](https://igl.ethz.ch/projects/LB3D/). I was able to use their code to verify my results. I ran their code on my unit cube and compared my $\mathbf{L}$, $\mathbf{M}$ operators with theirs, as well as the calculations in ```src/tet_volume.cpp``` and ```src/circumcentre3d.cpp``` with theirs. 
+The authors of the paper already have [code](https://igl.ethz.ch/projects/LB3D/dualLaplace.cpp) on their [project website](https://igl.ethz.ch/projects/LB3D/). I was able to use their code to verify my results. I ran their code on my unit cube and compared my $\mathbf{L}$, $\mathbf{M}$ operators with theirs, as well as the calculations in ```src/tet_volume.cpp``` and ```src/circumcentre3d.cpp``` with theirs. While I think their code is more elegant, mine does what it needs to. :)
 
 ## Final Comments
 
@@ -172,6 +175,7 @@ This was a very fun (and contained) paper to implement! A couple of things I wou
 
 -   Implemented a demo that utilizes the mass matrix that was also built (in an application like smoothing)
 -   Experimented with more shapes. I found this particularly difficult because meshing time can be dependent on the geometry and volume of the shape. 
+-   Learned more about creating meshes that are good for tetrahedralizing. Most of the time spent on this project was on struggles with getting Tetgen set up, Tetgen runtimes, converting between file types, and wrangling non-Delaunay meshes. 
 
 Thank you [CSC2530 Team](https://github.com/alecjacobson/geometry-processing-csc2520) for delivering such a fun, applicable, and hands-on course!
 
