@@ -5,14 +5,15 @@ An implementation of the tetrahedral laplacian operators described in the SGP 20
 In addition to implementing the dual laplacian in ```src/dual_laplacian.h```, I also provide code written in libigl-style for:
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
+  Maybe these can also be nice additions to libigl!
 
 Author: esther lin
 
 Please refer to:
 
 -   ```entry.md``` for the libigl tutorial-style explanation of this project
--   [YouTube]() for a 1 min demo of this project
--   [GitHub (this project)]() for everything else
+-   [YouTube](https://youtu.be/0IMYSC3cPkQ) for a 1 min demo of this project
+-   [GitHub (this project)](https://github.com/estherlin/dual-laplace) for everything else
 
 ## Structure of Repo
 

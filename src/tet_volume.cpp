@@ -1,7 +1,7 @@
 #include "tet_volume.h"
+#include <cmath>
 #include <vector>
 #include <iostream>
-#include <cmath>
 #include <Eigen/Dense>
 
 void tet_volume(

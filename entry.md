@@ -1,6 +1,14 @@
-# Libigl-style Tutorial
+## Links to Full Project
 
-(Please see [github](https://github.com/estherlin/dual-laplace) for full project and [YouTube]() for video)
+Please refer to:
+
+-   ```entry.md``` below for the libigl tutorial-style explanation of this project
+-   [YouTube](https://youtu.be/0IMYSC3cPkQ) for a 1 min demo of this project
+-   [GitHub (this project)](https://github.com/estherlin/dual-laplace) for everything else
+
+
+
+# Libigl-style Tutorial
 
 While the cotan Laplacian operator has been well studied and implemented for triangle meshes, there is no similar default option for tetrahedral meshes. This is because for triangle meshes, two different approaches from the finite element and finite volume methods both yield the cotan Laplacian. However, for tetrahedral meshes, the finite element method yields the primal Laplacian while the finite volume method yields the dual Laplacian. These two Laplacians are often different and can have different applications. The focus of this project is to construct the dual Laplacian operator for a tetrahedral mesh. 
 
@@ -53,3 +61,4 @@ where ```TV``` is our matrix of vertex coordinates and ```TT``` is matrix of tet
 
 ​	*Solving of a Dirichlet boundary value problem with the dual laplacian animation*
 
+--This ends the libigl style tutorial. --

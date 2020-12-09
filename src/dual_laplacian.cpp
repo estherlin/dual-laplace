@@ -1,11 +1,12 @@
 #include "dual_laplacian.h"
-#include "circumcentre3d.h"
 #include "tet_volume.h"
-#include<Eigen/SparseCholesky>
+#include "circumcentre3d.h"
+#include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <Eigen/SparseCholesky>
+#include <cmath>
 #include <vector>
 #include <iostream>
-#include <cmath>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
+
 
 typedef Eigen::Triplet<double> t;
 
@@ -68,7 +69,7 @@ void dual_laplacian(
       Eigen::Vector3d edge_cc;
       edge_cc = (0.5) * (V.row(T(i, faces(j, 0))) + V.row(T(i, faces(j, 1))));
 
-      // Get volume
+      // Get volume of tet
       double vol;
       tet_volume(edge_cc, tri_cc, tet_cc, V.row(T(i, faces(j, 0))), vol);
 

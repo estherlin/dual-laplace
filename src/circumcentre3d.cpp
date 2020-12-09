@@ -1,27 +1,29 @@
 #include "circumcentre3d.h"
+#include <cmath>
 #include <vector>
 #include <iostream>
-#include <cmath>
 #include <Eigen/Dense>
-
 
 void circumcentre3d(
   const Eigen::MatrixXd& A, 
   Eigen::Vector3d& c){
 
-  // Find number of data points
+  // Find number of vertex points
   int n = A.rows();
 
-  // If number of data points is 1, the centre is the point
-  if (n == 1){
+  if (n == 1)
+  {
+    // If number of vertex points is 1, the centre is the point
     c = A.row(0);
 
   } else if (n == 2)
   {
+    // If number of data points is 2, the centre is the midpoint
     c = 0.5 * (A.row(0) + A.row(1));
 
   } else if (n == 3)
-  { 
+  {
+    // If number of vertex points is 3 we have a triangle:
     // Solutions like https://gamedev.stackexchange.com/a/60631
     // aren't good because they use cross products and cross products 
     // caused overflow problems for me. So I use Barycentric coordinates:
@@ -40,7 +42,9 @@ void circumcentre3d(
     c = (O(0)/sum)*A.row(2) + (O(1)/sum)*A.row(0) + (O(2)/sum)*A.row(1);
 
   } else if (n == 4)
-  { // Math from: https://en.wikipedia.org/wiki/Tetrahedron#Circumcenter
+  { 
+    // If number of vertex points is 4 we have a tetrahedron:
+    // Math from: https://en.wikipedia.org/wiki/Tetrahedron#Circumcenter
     Eigen::Matrix3d Q(3,3);
     Q.row(0) = A.row(1) - A.row(0);
     Q.row(1) = A.row(2) - A.row(0);
@@ -54,7 +58,8 @@ void circumcentre3d(
     c = (0.5) * Q.colPivHouseholderQr().solve(b);
 
   } else {
-      std::cout << "Error: Can't handle circumcentre of more than 4 points" << std::endl;
+    // If we have more than 4 vertex points, not applicable
+    std::cout << "Error: Can't handle circumcentre of more than 4 points" << std::endl;
   }
 
 }

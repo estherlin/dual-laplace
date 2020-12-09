@@ -68,6 +68,7 @@
         "stop_token": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "sparsecholesky": "cpp"
     }
 }
