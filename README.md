@@ -6,11 +6,12 @@ In addition to implementing the dyal laplacian, I also provide code written in l
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
 
-Template from [libigl-example-project](https://github.com/libigl/libigl-example-project). 
-
 Author: [esther]()
 
 ## Setup
+
+-   Template from [libigl-example-project](https://github.com/libigl/libigl-example-project)
+-   Demo adapted from [Example 605 Tetgen](https://github.com/libigl/libigl/blob/master/tutorial/605_Tetgen/main.cpp) and [Example 303 Laplace Equation](https://github.com/libigl/libigl/blob/master/tutorial/303_LaplaceEquation/main.cpp)
 
 ### Dependencies
 
@@ -36,11 +37,9 @@ From within the `build` directory just issue:
     ./tetra
 A glfw app should launch displaying a 3D cube.
 
-## Examples
+## Demo: Laplace equation with Dirchlet boundary conditions
 
-### Laplace equation with Dirchlet boundary conditions
-
-![Cooling one side of a cube](./assets/cube.gif)
+![Cooling one side of a cube](./assets/dual_cube.gif)
 
 In this example, we solve the Laplace equation
 $$
@@ -49,8 +48,7 @@ $$
 where $\Delta$ is the Laplacian operator and $u$ are the values at the vertices of our 3D mesh, subject to Dirichlet boundary conditions
 $$
 u\vert_{\partial S} = 0
-
 $$
 
-### Smoothing
+
 
