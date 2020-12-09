@@ -3,6 +3,9 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
+// Constructs the dual laplacian and mass matrix for a given 
+// tetrahedral mesh (V,T).
+//
 // Inputs:
 //   V  #V by 3 list of vertex positions
 //   T  #T by 4 list tetrahedra indices into rows of V

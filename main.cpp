@@ -1,49 +1,37 @@
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
-#include <igl/readOFF.h>
-#include <igl/barycenter.h>
-#include <igl/massmatrix.h>
-#include <igl/cotmatrix.h>
+#include "dual_laplacian.h"
+#include <igl/slice.h>
+#include <igl/colon.h>
 #include <igl/parula.h>
-#include <igl/readOBJ.h>
-#include <igl/parula.h>
-#include <igl/boundary_facets.h>
 #include <igl/unique.h>
 #include <igl/setdiff.h>
-#include <igl/slice.h>
+#include <igl/readOFF.h>
+#include <igl/cotmatrix.h>
+#include <igl/barycenter.h>
+#include <igl/massmatrix.h>
 #include <igl/slice_into.h>
+#include <igl/boundary_facets.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/min_quad_with_fixed.h>
-#include <igl/colon.h>
-#include <igl/faces_first.h>
-#include <Eigen/Sparse>
-#include<Eigen/SparseCholesky>
-#include "dual_laplacian.h"
-#include <Eigen/Sparse>
-#include <unsupported/Eigen/SparseExtra>
+#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <iostream>
 #include <Eigen/Sparse>
-#include <unsupported/Eigen/SparseExtra>
+#include <Eigen/SparseCholesky>
 
 // Input polygon
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd B;
-Eigen::MatrixXd N;
 
 // Tetrahedralized interior
-Eigen::MatrixXd TV, tempTV;
-Eigen::MatrixXi TT, tempTT;
-Eigen::MatrixXi TF, tempTF;
+Eigen::MatrixXd TV;
+Eigen::MatrixXi TT;
+Eigen::MatrixXi TF;
 Eigen::MatrixXd C;
 
 // Eigen Problem
 Eigen::VectorXd Z, Z_in;
 Eigen::MatrixXi bound_faces, bound_inds, bound_across;
 Eigen::MatrixXd bound_ver;
-
-// Smoothing Problem
-double lambda = 0.1;
-Eigen::MatrixXd G, U;;
 
 
 // This function is called every time a keyboard button is pressed
@@ -152,11 +140,11 @@ void solve_eigen(){
   Eigen::VectorXd Beq;
   Eigen::SparseMatrix<double> Aeq;
 
-
   // Our L may be indefinite
   igl::min_quad_with_fixed_precompute(L.eval(),b,Aeq,true,mqwf);
   igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -165,23 +153,12 @@ int main(int argc, char *argv[])
 
   igl::readOFF(argc>1?argv[1]:"../data/cube.off",V,F);
 
-  std::cout<<V.rows()<<V.cols()<<std::endl;
-  std::cout<<F.rows()<<F.cols()<<std::endl;
-
-  // Tetrahedralize the interior  "pq1.1a0.05aA"
-  Eigen::VectorXi IM;
-  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414a0.01", TV,TT,TF);
-  //igl::faces_first(TV,F,IM);
-  //TT = TT.unaryExpr(bind1st(mem_fun( static_cast<VectorXi::Scalar& (VectorXi::*)(VectorXi::Index)>(&VectorXi::operator())),&IM)).eval();
-
+  // Tetrahedralize the interior 
+  // Refine mesh by tweaking number parameters in "pq1.1a0.05aA"
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.1a0.005", TV,TT,TF);
+  
   // Solve the eigenvalue problem
   solve_eigen();
-
-  // Smoothing
-  G = TV.col(1);
-  G += 0.1*(G.maxCoeff()-G.minCoeff())*
-        Eigen::MatrixXd::Random(G.rows(),G.cols());
-  U = G;
 
   //Set color scale
   igl::parula(Z,true,C);
