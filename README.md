@@ -104,14 +104,11 @@ This code is implemented in ```src/dual_laplacian.h``` and can be called with
 dual_laplacian(TV, TT, L, M);
 ```
 
-where ```TV``` is our matrix of vertex coordinates and ```TT``` is matrix of tetrahedrons. 
+where ```TV``` is our matrix of vertex coordinates and ```TT``` is matrix of tetrahedrons, and L and M are sparse matrix representations of the operators. 
 
-<p float="left">
-  <img src="./assets/cooling_a_side_of_a_cube_full_view.jpg"  alt="Using the dual Laplace operator to solve a Dirichlet boundary value problem" width="100" />
-  <img src="./assets/cooling_a_side_of_a_cube_xsectional_view.jpg" width="100" /> 
-</p>
+![Solving of a Dirichlet boundary value problem with the dual laplacian](assets/aggregate_view.png)
 
-
+​	*Solving of a Dirichlet boundary value problem with the dual laplacian*
 
 ### Demo
 
