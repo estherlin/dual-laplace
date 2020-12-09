@@ -113,7 +113,7 @@ for (int i: tetrahedrons){
 }
 ```
 
-This code is implemented in ```src/dual_laplacian.h``` and can be called with
+I hard coded the 4x3 = 12 possible triangle vertex combinations for each tetrahedron in a 12x3 matrix in my implementation to reduce an extra for loop. I defined each triangle orientation to have a positive normal, where the normal is facing out of the tetrahedron. The code is implemented in ```src/dual_laplacian.h``` and can be called with
 
 ```c++
 dual_laplacian(TV, TT, L, M);
