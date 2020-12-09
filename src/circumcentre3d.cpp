@@ -23,8 +23,8 @@ void circumcentre3d(
   } else if (n == 3)
   { 
     // Reading online, solutions like https://gamedev.stackexchange.com/a/60631
-    // aren't good because they use cross products and cross products seem 
-    // to cause overflow problems. So we use Barycentric coordinates:
+    // aren't good because they use cross products and cross products may
+    // cause overflow problems. So we use Barycentric coordinates:
     // Math from: https://math.stackexchange.com/a/2130522
     double a_sq = (A.row(0)-A.row(1)).squaredNorm();
     double b_sq = (A.row(1)-A.row(2)).squaredNorm();

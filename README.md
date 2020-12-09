@@ -2,15 +2,22 @@
 
 An implementation of the tetrahedral laplacian operators described in the SGP 2020 paper [Properties of Laplace Operators for Tetrahedral Meshes](https://igl.ethz.ch/projects/LB3D/LB3D.pdf). 
 
-In addition to implementing the dual laplacian, I also provide code written in libigl-style for:
+In addition to implementing the dual laplacian in ```src/dual_laplacian.h```, I also provide code written in libigl-style for:
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
-
-The ```.cpp``` files can be found in ```include/```. Documentation on the input/outputs for each function can be found in the header files in ```src/```.
 
 Author: esther, 2020
 
 Project link: [https://github.com/estherlin/dual-laplace](https://github.com/estherlin/dual-laplace)
+
+Project demo video: 
+
+## Structure of Repo
+
+-   ```include/```: contains header files with documentation
+-   ```src/```: contains ```.cpp``` files
+-   ```data/```: contains ```.off``` files used in demo and development
+-   ```assets/```: contains screenshots and ```.gif``` files demo-ing the program
 
 ## Setup
 
