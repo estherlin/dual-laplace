@@ -21,16 +21,22 @@ void circumcentre3d(
     c = 0.5 * (A.row(0) + A.row(1));
 
   } else if (n == 3)
-  { // Math from: https://gamedev.stackexchange.com/a/60631
-    Eigen::Vector3d a = A.row(0);
-    Eigen::Vector3d b = A.row(1);
-    Eigen::Vector3d c = A.row(2);
+  { 
+    // Reading online, solutions like https://gamedev.stackexchange.com/a/60631
+    // aren't good because they use cross products and cross products seem 
+    // to cause overflow problems. So we use Barycentric coordinates:
+    // Math from: https://math.stackexchange.com/a/2130522
+    double a_sq = (A.row(0)-A.row(1)).squaredNorm();
+    double b_sq = (A.row(1)-A.row(2)).squaredNorm();
+    double c_sq = (A.row(2)-A.row(0)).squaredNorm();
 
-    Eigen::Vector3d area = (b-a).cross(c-a);
-    Eigen::Vector3d num = (c-a).squaredNorm()*area.cross(b-a) - (b-a).squaredNorm()*area.cross(c-a);
-    double den = 2*area.squaredNorm();
+    Eigen::Vector3d O(3,1);
+    O(0) = a_sq * (b_sq + c_sq - a_sq);
+    O(1) = b_sq * (a_sq + c_sq - b_sq);
+    O(2) = c_sq * (b_sq + a_sq - c_sq);
+    double sum = O(0) + O(1) + O(2);
 
-    c = a + (1.0/den)*num;
+    c = (O(0)/sum)*A.row(2) + (O(1)/sum)*A.row(0) + (O(2)/sum)*A.row(1);
 
   } else if (n == 4)
   { // Math from: https://en.wikipedia.org/wiki/Tetrahedron#Circumcenter
@@ -44,7 +50,7 @@ void circumcentre3d(
     b(1) = A.row(2).squaredNorm() - A.row(0).squaredNorm();
     b(2) = A.row(3).squaredNorm() - A.row(0).squaredNorm();
 
-    c = Q.colPivHouseholderQr().solve(b);
+    c = (0.5) * Q.colPivHouseholderQr().solve(b);
 
   } else {
       std::cout << "Error: Can't handle circumcentre of more than 4 points" << std::endl;

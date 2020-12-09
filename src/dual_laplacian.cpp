@@ -23,7 +23,7 @@ void dual_laplacian(
   std::vector<t> tripletListM;
   tripletListM.reserve(4*3*2*T.rows()); 
 
-  // List of triangle faces per tetrahedron
+  // List of 12 triangle face orientations per tetrahedron
   Eigen::MatrixXi faces(12,3);
   faces << 0,1,2,
            0,2,3,
@@ -70,11 +70,11 @@ void dual_laplacian(
 
       // Get volume
       double vol;
-      tet_volume(V.row(T(i, faces(j, 0))), edge_cc, tri_cc, tet_cc, vol);
+      tet_volume(edge_cc, tri_cc, tet_cc, V.row(T(i, faces(j, 0))), vol);
 
       // Place volume into our M operator
-      tripletListM.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 1)), vol)); // i != j
-      tripletListM.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 0)), vol)); // i != j
+      tripletListM.push_back(t(T(i, faces(j, 0)), T(i, faces(j, 0)), vol)); // i != j
+      tripletListM.push_back(t(T(i, faces(j, 1)), T(i, faces(j, 1)), vol)); // i != j
 
       // Get edge norm and weight of this tetrahedron
       double edge_sq = (V.row(T(i, faces(j, 0))) - V.row(T(i, faces(j, 1)))).squaredNorm();
@@ -89,8 +89,7 @@ void dual_laplacian(
     }
   }
 
-
-  // The matrix is num verticies x num vertices, always set to zero!
+  // The matrix is num verticies x num vertices
   L.resize(V.rows(), V.rows());
   M.resize(V.rows(), V.rows());
 

@@ -18,7 +18,11 @@
 #include <Eigen/Sparse>
 #include<Eigen/SparseCholesky>
 #include "dual_laplacian.h"
-#include "smooth.h"
+#include <Eigen/Sparse>
+#include <unsupported/Eigen/SparseExtra>
+#include <iostream>
+#include <Eigen/Sparse>
+#include <unsupported/Eigen/SparseExtra>
 
 // Input polygon
 Eigen::MatrixXd V;
@@ -95,17 +99,10 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.data().set_mesh(V, F);
     viewer.data().set_data(Eigen::VectorXd::Ones(V.rows(),1));
     viewer.data().set_face_based(true);
-  } else if (key == 'n' || key == 'N'){
-    smooth(TV, TT, U, lambda, U);
-    viewer.data().set_mesh(TV,TF);
-    viewer.data().compute_normals();
-    Eigen::MatrixXd CC;
-    igl::parula(U,G.minCoeff(),G.maxCoeff(),CC);
-    viewer.data().set_colors(CC);
   }
-
   return false;
 }
+
 
 void solve_eigen(){
   // Compute barycenters
@@ -127,6 +124,7 @@ void solve_eigen(){
 
   // Construct and slice up Laplacian
   Eigen::SparseMatrix<double> L,L_in_in,L_in_b, M;
+
   // Swap to see primal implmenetation
   //igl::cotmatrix(TV, TT, L);
   //igl::massmatrix(TV, TT, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
@@ -195,8 +193,6 @@ int main(int argc, char *argv[])
   std::cout<<R"(
     1-9  cross-sectional views
     b    see full shape
-    f    full shape
-    n    smoothing
   )"<<std::endl;
 
   viewer.callback_key_down = &key_down;

@@ -11,5 +11,6 @@ void tet_volume(
   const Eigen::Vector3d& d,
   double& vol)
 {  
-  vol = (1.0/6.0) * ((a-d).cross(b-d)).dot(c-d);
+  // Math from: https://en.wikipedia.org/wiki/Tetrahedron#Volume
+  vol = (1.0/6.0) * (a-d).dot((b-d).cross(c-d));
 }
