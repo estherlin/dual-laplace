@@ -27,8 +27,8 @@ void circumcentre3d(
     // Solutions like https://gamedev.stackexchange.com/a/60631
     // aren't good because they use cross products and cross products 
     // caused overflow problems for me. So I use Barycentric coordinates:
-    // Math from: https://math.stackexchange.com/a/2130522 and 
-    // discussion from: https://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html
+    // Math from: https://math.stackexchange.com/a/2130522 and some 
+    // adaptations from: https://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html
     double a_sq = (A.row(0)-A.row(1)).squaredNorm();
     double b_sq = (A.row(1)-A.row(2)).squaredNorm();
     double c_sq = (A.row(2)-A.row(0)).squaredNorm();

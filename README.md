@@ -6,9 +6,7 @@ In addition to implementing the dual laplacian in ```src/dual_laplacian.h```, I 
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
 
-Maybe these can also be nice additions to libigl!
-
-Author: esther lin
+Maybe these can also be useful additions to libigl!
 
 Please refer to:
 
@@ -81,26 +79,7 @@ w_{i j}=\frac{\operatorname{Vol}(\star(i, j))}{\operatorname{Vol}(i, j)}
 $$
 where $\operatorname{Vol}(\cdot)$ is the measure of an element. For example, $\operatorname{Vol}(i,j)$ would be the length of the edge between vertices $i$ and $j$, $\operatorname{Vol}(i,j,k) $ would be area, and $\operatorname{Vol}(i,j,k,l)$ would be volume. Also, $(\star(i,j))$ is the polygon dual to edge $(i, j)$. The vertices of this polygon will be at the circumcentre of the tetrahedron, the two triangles adjacent to edge $(i,j)$, and the midpoint of edge $(i,j)$. Next, we slice the polygon into two triangles. From here, the area of the polygon can be found by determining the signed volume of the tetrahedron formed by each of these triangles with vertex $i$ and dividing it by $\operatorname{Vol}(i,j)$, the height of this tetrahedron. 
 
-We take the approach of summing together the contributions for each triangle, for each tetrahedron in the mesh to construct the dual Laplacian $\mathbf{L}$, similar to how the cotan Laplacian is constructed in libigl. This expression indicates that even for a tetrahedral mesh, the edge weights can be considered on a per triangle basis. The benefit of this approach is that we can construct the diagonal mass matrix simultaneously. 
-
-## Demo
-
-### Overview
-
-In this example, we solve the Laplace equation on a unit cube:
-$$
-\Delta u = 0
-$$
-where $\Delta$ is the Laplacian operator and $u$ are the values at the vertices of our 3D mesh, subject to Dirichlet boundary conditions
-$$
-u\vert_{\partial S} = 0
-$$
-
-where $\partial S$ is the purple face of the cube. The example is adapted from libigl [Example 303 Laplace Equation](https://github.com/libigl/libigl/blob/master/tutorial/303_LaplaceEquation/main.cpp) and the cross sectional views are adapted from libigl [Example 605 Tetgen](https://github.com/libigl/libigl/blob/master/tutorial/605_Tetgen/main.cpp). 
-
-![Solving of a Dirichlet boundary value problem with the dual laplacian](assets/aggregate_view.png)
-
-​	*Solving of a Dirichlet boundary value problem with the dual laplacian on the unit cube. A face is held at zero (purple).*
+This expression for the weights indicates that even for a tetrahedral mesh, the edge weights can be considered on a per triangle basis. We take the approach of summing together the contributions for each triangle, for each tetrahedron in the mesh to construct the dual Laplacian $\mathbf{L}$, similar to how the cotan Laplacian is constructed in my smoothing assignment. The benefit of this approach is that we can construct the diagonal mass matrix simultaneously.
 
 ### Implementation
 
@@ -137,8 +116,27 @@ where ```TV``` is our matrix of vertex coordinates and ```TT``` is matrix of tet
 
 To help with calculations, I implemented two addition functions in libigl-style:
 
-1.  ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space. In the process of implementing this, I found an excellent discussion on all things circumcentre from [Jonathan Shewchuk](https://people.eecs.berkeley.edu/~jrs/)[here](https://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html). 
+1.  ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space. In the process of implementing this, I found an excellent discussion on all things circumcentre from [Jonathan Shewchuk](https://people.eecs.berkeley.edu/~jrs/) [here](https://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html).  Through his work (an my debugging :D), I discovered that while solutions with cross products are neat, cross products norms in the denominator can be unstable. This manifested in overflow problems for me. 
 2.  ```src/tet_volume.h```: calculates the volume of a tetrahedron
+
+## Demo
+
+### Overview
+
+In this example, we solve the Laplace equation on a unit cube:
+$$
+\Delta u = 0
+$$
+where $\Delta$ is the Laplacian operator and $u$ are the values at the vertices of our 3D mesh, subject to Dirichlet boundary conditions
+$$
+u\vert_{\partial S} = 0
+$$
+
+where $\partial S$ is the purple face of the cube. The example is adapted from libigl [Example 303 Laplace Equation](https://github.com/libigl/libigl/blob/master/tutorial/303_LaplaceEquation/main.cpp) and the cross sectional views are adapted from libigl [Example 605 Tetgen](https://github.com/libigl/libigl/blob/master/tutorial/605_Tetgen/main.cpp). 
+
+![Solving of a Dirichlet boundary value problem with the dual laplacian](assets/aggregate_view.png)
+
+​	*Solving of a Dirichlet boundary value problem with the dual laplacian on the unit cube. A face is held at zero (purple).*
 
 ### Results
 
@@ -167,7 +165,7 @@ These physical inconsistencies may be attributed to a coarse meshing, but I thin
 
 ### Testing
 
-The authors of the paper already have [code](https://igl.ethz.ch/projects/LB3D/dualLaplace.cpp) on their [project website](https://igl.ethz.ch/projects/LB3D/). I was able to use their code to verify my results. I ran their code on my unit cube and compared my $\mathbf{L}$, $\mathbf{M}$ operators with theirs, as well as the calculations in ```src/tet_volume.cpp``` and ```src/circumcentre3d.cpp``` with theirs. While I think their code is more elegant, mine does what it needs to. :)
+The authors of the paper already have [code](https://igl.ethz.ch/projects/LB3D/dualLaplace.cpp) on their [project website](https://igl.ethz.ch/projects/LB3D/). I viewed their code for validation purposes. I ran their code on my unit cube and compared my $\mathbf{L}$, $\mathbf{M}$ operators with theirs, as well as the calculations in ```src/tet_volume.cpp``` and ```src/circumcentre3d.cpp``` with theirs. While I think their code is more elegant, mine does what it needs to. :) Also, the helper functions work too!
 
 ## Final Comments
 

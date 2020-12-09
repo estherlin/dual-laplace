@@ -25,6 +25,7 @@ void dual_laplacian(
   tripletListM.reserve(4*3*2*T.rows()); 
 
   // List of 12 triangle face orientations per tetrahedron
+  // Use this list of faces instead of 2 for loops over indices
   Eigen::MatrixXi faces(12,3);
   faces << 0,1,2,
            0,2,3,
@@ -39,7 +40,7 @@ void dual_laplacian(
            3,1,0,
            3,2,1;
 
-  // Loop over each tetrahedron
+  // Loop over each tetrahedron in mesh
   for (int i = 0; i < T.rows(); i++){
 
     // Get our tetrahedron
