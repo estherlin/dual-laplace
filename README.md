@@ -2,11 +2,15 @@
 
 An implementation of the tetrahedral laplacian operators described in the SGP 2020 paper [Properties of Laplace Operators for Tetrahedral Meshes](https://igl.ethz.ch/projects/LB3D/LB3D.pdf). 
 
-In addition to implementing the dyal laplacian, I also provide code written in libigl-style for:
+In addition to implementing the dual laplacian, I also provide code written in libigl-style for:
 1. ```src/circumcentre3d.h```: calculates the circumcentre of triangles and tetrahedrons in 3D space  
 2. ```src/tet_volume.h```: calculates the volume of a tetrahedron
 
-Author: [esther]()
+The ```.cpp``` files can be found in ```include/```. Documentation on the input/outputs for each function can be found in the header files in ```src/```.
+
+Author: esther, 2020
+
+Project link: [https://github.com/estherlin/dual-laplace](https://github.com/estherlin/dual-laplace)
 
 ## Setup
 
@@ -15,9 +19,9 @@ Author: [esther]()
 
 ### Dependencies
 
--   [libigl](http://libigl.github.io/libigl/)
+-   [libigl](http://libigl.github.io/libigl/): make sure to have the full install! Have a version of libigl that is built according to the [libigl tutorial](https://libigl.github.io/tutorial/#downloading-libigl)
 -   Eigen
--   tetgen
+-   tetgen: comes with the full install of libigl
 
 ### Compile
 
@@ -32,10 +36,21 @@ This should create a `tetra` binary.
 
 ### Run
 
-From within the `build` directory just issue:
+From within the `build` directory, issue:
 
     ./tetra
-A glfw app should launch displaying a 3D cube.
+A glfw app should launch displaying a 3D cube. 
+
+-   To see cross sections of the cube, enter numbers between 1 and 9
+-   To see the entire cube, enter 'B' or 'b'
+
+To see other meshes, issue:
+
+```
+./tetra ../data/<file>.off
+```
+
+Beware! Other meshes may take a **long** time to load!
 
 ## Demo: Laplace equation with Dirchlet boundary conditions
 
